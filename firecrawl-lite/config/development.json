@@ -1,0 +1,39 @@
+{
+  "port": 3000,
+  "browser": {
+    "headless": true,
+    "poolSize": 5,
+    "timeout": 30000,
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "extraction": {
+    "waitForSelector": null,
+    "waitTime": 2000,
+    "includeImages": true,
+    "includeLinks": true,
+    "maxContentLength": 1000000
+  },
+  "cache": {
+    "ttl": 3600,
+    "maxSize": "100mb",
+    "redis": {
+      "host": "localhost",
+      "port": 6379,
+      "password": null,
+      "db": 0
+    }
+  },
+  "rateLimit": {
+    "windowMs": 900000,
+    "max": 100,
+    "message": "Too many requests from this IP"
+  },
+  "logging": {
+    "level": "debug",
+    "filename": "logs/app.log"
+  }
+}

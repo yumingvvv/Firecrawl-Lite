@@ -32,7 +32,26 @@ const extractSchema = joi.object({
       linkStyle: joi.string().valid('inlined', 'referenced').default('inlined')
     }),
     saveToFile: joi.boolean().default(false),
-    saveDirectory: joi.string().pattern(/^[a-zA-Z0-9_\-\/]+$/).allow('').optional()
+    saveDirectory: joi.string().pattern(/^[a-zA-Z0-9_\-\/]+$/).allow('').optional(),
+    // New advanced options
+    waitTime: joi.number().min(1000).max(30000).default(3000),
+    waitUntil: joi.string().valid('networkidle0', 'networkidle1', 'load', 'domcontentloaded').default('networkidle0'),
+    waitForContentSelectors: joi.boolean().default(true),
+    scrollToBottom: joi.boolean().default(true),
+    maxContentLength: joi.number().min(10000).max(10000000).default(1000000),
+    // Browser configuration
+    browser: joi.object({
+      headless: joi.boolean().default(true),
+      slowMo: joi.number().min(0).max(1000).default(0)
+    }),
+    // Extraction configuration
+    extraction: joi.object({
+      waitForSelector: joi.string().allow(null),
+      waitTime: joi.number().min(1000).max(30000).default(3000),
+      waitForContentSelectors: joi.boolean().default(true),
+      scrollToBottom: joi.boolean().default(true),
+      maxContentLength: joi.number().min(10000).max(10000000).default(1000000)
+    })
   }).default({})
 });
 
@@ -152,12 +171,30 @@ router.post('/extract', async (req, res) => {
 
     const { url, options } = value;
     
-    // Initialize crawler service with app config
-    const crawler = await initializeCrawlerService(req.app.locals.config);
+    // Map new options to the crawler service format
+    const crawlerOptions = {
+      ...options,
+      // Map waitUntil to the correct format for playwright
+      waitUntil: options.waitUntil === 'networkidle0' ? 'networkidle' : 
+                 options.waitUntil === 'networkidle1' ? 'networkidle' :
+                 options.waitUntil
+    };
+    
+    // Initialize crawler service with app config and pass extraction options
+    const crawler = await initializeCrawlerService({
+      ...req.app.locals.config,
+      extraction: {
+        waitTime: options.waitTime,
+        waitForContentSelectors: options.waitForContentSelectors,
+        scrollToBottom: options.scrollToBottom,
+        maxContentLength: options.maxContentLength,
+        ...options.extraction
+      }
+    });
     
     // Extract content
     const startTime = Date.now();
-    const result = await crawler.crawlUrl(url, options);
+    const result = await crawler.crawlUrl(url, crawlerOptions);
     const processingTime = Date.now() - startTime;
     
     if (result.success) {

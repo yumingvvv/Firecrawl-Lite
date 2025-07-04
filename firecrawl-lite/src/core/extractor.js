@@ -5,11 +5,13 @@ class ContentExtractor {
   constructor(options = {}) {
     this.options = {
       waitForSelector: options.waitForSelector || null,
-      waitTime: options.waitTime || 2000,
+      waitTime: options.waitTime || 3000,
       includeImages: options.includeImages !== false,
       includeLinks: options.includeLinks !== false,
       maxContentLength: options.maxContentLength || 1000000,
       timeout: options.timeout || 30000,
+      scrollToBottom: options.scrollToBottom !== false,
+      waitForContentSelectors: options.waitForContentSelectors !== false,
       ...options
     };
   }
@@ -19,10 +21,55 @@ class ContentExtractor {
       // Wait for page to load
       await page.waitForLoadState('domcontentloaded');
       
+      // Intelligent wait for main content areas
+      if (this.options.waitForContentSelectors) {
+        const contentSelectors = [
+          'main', 'article', '[role="main"]', 
+          '.content', '#content', '.post-content',
+          '.markdown-body', '.doc-content', '.documentation'
+        ];
+        
+        for (const selector of contentSelectors) {
+          try {
+            await page.waitForSelector(selector, { 
+              timeout: 5000,
+              state: 'visible' 
+            });
+            console.log(`Found content selector: ${selector}`);
+            break;
+          } catch (e) {
+            // Continue trying next selector
+          }
+        }
+      }
+      
       // Wait for specific selector if provided
       if (this.options.waitForSelector) {
         await page.waitForSelector(this.options.waitForSelector, { 
           timeout: this.options.timeout 
+        });
+      }
+      
+      // Wait for code blocks to load (useful for documentation sites)
+      try {
+        await page.waitForFunction(() => {
+          const codeBlocks = document.querySelectorAll('pre code, pre, code');
+          return codeBlocks.length > 0;
+        }, { timeout: 5000 });
+      } catch (e) {
+        // Code blocks might not exist on all pages
+      }
+      
+      // Scroll to bottom to trigger lazy loading
+      if (this.options.scrollToBottom) {
+        await page.evaluate(() => {
+          window.scrollTo(0, document.body.scrollHeight);
+        });
+        await page.waitForTimeout(1000);
+        
+        // Scroll back to top
+        await page.evaluate(() => {
+          window.scrollTo(0, 0);
         });
       }
       

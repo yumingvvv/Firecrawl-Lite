@@ -3,10 +3,13 @@ const helmet = require('helmet');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const swaggerUi = require('swagger-ui-express');
+require('dotenv').config();
 const config = require('./utils/config');
 const Logger = require('./utils/logger');
 const swaggerSpecs = require('./docs/swagger');
 const { router: extractRouter, gracefulShutdown } = require('./routes/extract');
+const firecrawlRouter = require('./routes/firecrawl');
+const markitdownRouter = require('./routes/markitdown');
 
 class Application {
   constructor() {
@@ -164,6 +167,8 @@ class Application {
 
     // API routes
     this.app.use('/api', extractRouter);
+    this.app.use('/api/firecrawl', firecrawlRouter);
+    this.app.use('/api/markitdown', markitdownRouter);
 
     /**
      * @swagger

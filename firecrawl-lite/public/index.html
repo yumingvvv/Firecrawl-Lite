@@ -53,6 +53,12 @@
                         <button id="batch-tab" class="tab-button px-6 py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm focus:outline-none transition-colors">
                             <i class="fas fa-layer-group mr-2"></i>Batch Processing
                         </button>
+                        <button id="firecrawl-tab" class="tab-button px-6 py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm focus:outline-none transition-colors">
+                            <i class="fas fa-fire mr-2"></i>Firecrawl API
+                        </button>
+                        <button id="markitdown-tab" class="tab-button px-6 py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm focus:outline-none transition-colors">
+                            <i class="fab fa-python mr-2"></i>Markitdown
+                        </button>
                     </nav>
                 </div>
 
@@ -117,6 +123,49 @@
                                 </div>
                             </div>
 
+                            <!-- Advanced Options -->
+                            <div class="border-t pt-6">
+                                <h3 class="text-lg font-medium text-gray-900 mb-4">Advanced Options</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <!-- Wait Time -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Wait Time (ms)</label>
+                                        <input type="number" id="waitTime" value="3000" min="1000" max="10000" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <p class="mt-1 text-xs text-gray-500">Time to wait for dynamic content after page load</p>
+                                    </div>
+
+                                    <!-- Wait Until Strategy -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Wait Until Strategy</label>
+                                        <select id="waitUntil" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                            <option value="networkidle0">Network Idle (0 requests)</option>
+                                            <option value="networkidle1">Network Idle (1 request)</option>
+                                            <option value="load">Load Event</option>
+                                            <option value="domcontentloaded">DOM Content Loaded</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Content Detection Options -->
+                                    <div class="space-y-2">
+                                        <label class="flex items-center space-x-3">
+                                            <input type="checkbox" id="waitForContentSelectors" checked class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                            <span class="text-sm font-medium text-gray-700">Smart Content Detection</span>
+                                        </label>
+                                        <label class="flex items-center space-x-3">
+                                            <input type="checkbox" id="scrollToBottom" checked class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                            <span class="text-sm font-medium text-gray-700">Scroll to Trigger Lazy Loading</span>
+                                        </label>
+                                    </div>
+
+                                    <!-- Max Content Length -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Max Content Length</label>
+                                        <input type="number" id="maxContentLength" value="1000000" min="10000" max="5000000" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <p class="mt-1 text-xs text-gray-500">Maximum characters to extract</p>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Submit Button -->
                             <div class="flex justify-end">
                                 <button type="submit" id="submit-btn" class="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
@@ -133,6 +182,220 @@
                             <p class="text-gray-500 text-lg">Batch processing coming soon!</p>
                             <p class="text-gray-400 mt-2">Use the Single URL tab with multiple URLs for now.</p>
                         </div>
+                    </div>
+
+                    <!-- Firecrawl Tab -->
+                    <div id="firecrawl-content" class="tab-content hidden">
+                        <form id="firecrawl-form" class="space-y-6">
+                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                <div class="flex items-start">
+                                    <i class="fas fa-info-circle text-blue-600 mt-1 mr-3"></i>
+                                    <div>
+                                        <h4 class="text-blue-900 font-medium">Firecrawl API Integration</h4>
+                                        <p class="text-blue-700 text-sm mt-1">Uses Firecrawl's advanced crawling capabilities for better content extraction. Requires a valid API key in .env file.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    URL to Extract
+                                </label>
+                                <input type="url" id="firecrawl-url" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" placeholder="https://docs.example.com/guide">
+                            </div>
+
+                            <!-- Firecrawl Options -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Format -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Output Formats</label>
+                                    <div class="space-y-2">
+                                        <label class="flex items-center space-x-3">
+                                            <input type="checkbox" id="firecrawl-markdown" checked class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                            <span class="text-sm font-medium text-gray-700">Markdown</span>
+                                        </label>
+                                        <label class="flex items-center space-x-3">
+                                            <input type="checkbox" id="firecrawl-html" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                            <span class="text-sm font-medium text-gray-700">HTML</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Wait Time -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Wait Time (ms)</label>
+                                    <input type="number" id="firecrawl-waitFor" value="3000" min="1000" max="30000" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+
+                                <!-- Content Options -->
+                                <div class="space-y-2">
+                                    <label class="flex items-center space-x-3">
+                                        <input type="checkbox" id="firecrawl-onlyMainContent" checked class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                        <span class="text-sm font-medium text-gray-700">Only Main Content</span>
+                                    </label>
+                                    <label class="flex items-center space-x-3">
+                                        <input type="checkbox" id="firecrawl-screenshot" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                        <span class="text-sm font-medium text-gray-700">Include Screenshot</span>
+                                    </label>
+                                </div>
+
+                                <!-- Timeout -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Timeout (ms)</label>
+                                    <input type="number" id="firecrawl-timeout" value="30000" min="5000" max="60000" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+
+                                <!-- Save Options -->
+                                <div class="flex items-center space-x-3">
+                                    <input type="checkbox" id="firecrawl-saveToFile" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                    <label for="firecrawl-saveToFile" class="text-sm font-medium text-gray-700">Save to file</label>
+                                </div>
+
+                                <!-- Save Directory -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Save Directory</label>
+                                    <input type="text" id="firecrawl-saveDirectory" placeholder="Leave empty for date-based folder" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+                            </div>
+
+                            <!-- Advanced Tags -->
+                            <div class="border-t pt-6">
+                                <h3 class="text-lg font-medium text-gray-900 mb-4">Advanced Tag Filtering</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <!-- Include Tags -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Include Tags (optional)</label>
+                                        <input type="text" id="firecrawl-includeTags" placeholder="article, main, .content" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <p class="mt-1 text-xs text-gray-500">Comma-separated list of tags/selectors to include</p>
+                                    </div>
+
+                                    <!-- Exclude Tags -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Exclude Tags</label>
+                                        <input type="text" id="firecrawl-excludeTags" value="nav, footer, header, .sidebar" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <p class="mt-1 text-xs text-gray-500">Comma-separated list of tags/selectors to exclude</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="flex justify-end">
+                                <button type="submit" id="firecrawl-submit-btn" class="px-6 py-3 bg-orange-600 text-white font-medium rounded-lg hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors">
+                                    <i class="fas fa-fire mr-2"></i>Extract with Firecrawl
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Markitdown Tab -->
+                    <div id="markitdown-content" class="tab-content hidden">
+                        <form id="markitdown-form" class="space-y-6">
+                            <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                                <div class="flex items-start">
+                                    <i class="fab fa-python text-purple-600 text-lg mt-1 mr-3"></i>
+                                    <div>
+                                        <h4 class="text-purple-900 font-medium">Microsoft Markitdown Integration</h4>
+                                        <p class="text-purple-700 text-sm mt-1">Uses Microsoft's markitdown tool with conda environment support. Excellent for complex documents and web pages.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    URL to Extract
+                                </label>
+                                <input type="url" id="markitdown-url" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors" placeholder="https://docs.example.com/guide">
+                            </div>
+
+                            <!-- Environment Configuration -->
+                            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                                <h3 class="text-lg font-medium text-gray-900 mb-4">
+                                    <i class="fas fa-cog mr-2"></i>Environment Configuration
+                                </h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <!-- Conda Environment -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Conda Environment</label>
+                                        <input type="text" id="markitdown-condaEnv" value="py312-tools" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                                        <p class="mt-1 text-xs text-gray-500">Name of the conda environment with markitdown installed</p>
+                                    </div>
+
+                                    <!-- Environment Check -->
+                                    <div class="flex items-end">
+                                        <button type="button" id="check-env-btn" class="px-4 py-2 bg-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors">
+                                            <i class="fas fa-check-circle mr-2"></i>Check Environment
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Environment Status -->
+                                <div id="env-status" class="mt-4 hidden">
+                                    <div class="p-3 rounded-lg">
+                                        <div id="env-status-content"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Markitdown Options -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Content Extraction Options -->
+                                <div class="space-y-3">
+                                    <h4 class="text-sm font-medium text-gray-700">Content Extraction</h4>
+                                    <label class="flex items-center space-x-3">
+                                        <input type="checkbox" id="markitdown-extractImages" checked class="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500">
+                                        <span class="text-sm font-medium text-gray-700">Extract Images</span>
+                                    </label>
+                                    <label class="flex items-center space-x-3">
+                                        <input type="checkbox" id="markitdown-extractLinks" checked class="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500">
+                                        <span class="text-sm font-medium text-gray-700">Extract Links</span>
+                                    </label>
+                                    <label class="flex items-center space-x-3">
+                                        <input type="checkbox" id="markitdown-extractTables" checked class="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500">
+                                        <span class="text-sm font-medium text-gray-700">Extract Tables</span>
+                                    </label>
+                                </div>
+
+                                <!-- Timing Options -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Command Timeout (seconds)</label>
+                                    <input type="number" id="markitdown-customTimeout" placeholder="Default: system timeout" min="10" max="300" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                                    <p class="mt-1 text-xs text-gray-500">Timeout for the markitdown command execution</p>
+                                </div>
+
+                                <!-- User Agent -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Custom User Agent</label>
+                                    <input type="text" id="markitdown-userAgent" placeholder="Default user agent" maxlength="200" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                                    <p class="mt-1 text-xs text-gray-500">Optional custom user agent string</p>
+                                </div>
+
+                                <!-- Processing Timeout -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Processing Timeout (ms)</label>
+                                    <input type="number" id="markitdown-timeout" value="60000" min="30000" max="300000" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                                    <p class="mt-1 text-xs text-gray-500">Overall timeout for the entire process</p>
+                                </div>
+
+                                <!-- Save Options -->
+                                <div class="flex items-center space-x-3">
+                                    <input type="checkbox" id="markitdown-saveToFile" class="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500">
+                                    <label for="markitdown-saveToFile" class="text-sm font-medium text-gray-700">Save to file</label>
+                                </div>
+
+                                <!-- Save Directory -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Save Directory</label>
+                                    <input type="text" id="markitdown-saveDirectory" placeholder="Leave empty for date-based folder" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                                </div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="flex justify-end">
+                                <button type="submit" id="markitdown-submit-btn" class="px-6 py-3 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-colors">
+                                    <i class="fab fa-python mr-2"></i>Extract with Markitdown
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -178,6 +441,8 @@
             // Tab switching
             document.getElementById('single-tab').addEventListener('click', () => switchTab('single'));
             document.getElementById('batch-tab').addEventListener('click', () => switchTab('batch'));
+            document.getElementById('firecrawl-tab').addEventListener('click', () => switchTab('firecrawl'));
+            document.getElementById('markitdown-tab').addEventListener('click', () => switchTab('markitdown'));
             
             // Clear results button
             document.getElementById('clear-results-btn').addEventListener('click', clearResults);
@@ -220,6 +485,53 @@
             
             const urls = urlsText.split('\n').filter(url => url.trim());
             startProcessing(urls);
+        });
+
+        // Firecrawl form submission
+        document.getElementById('firecrawl-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (isProcessing) {
+                stopFirecrawlProcessing();
+                return;
+            }
+            
+            const url = document.getElementById('firecrawl-url').value.trim();
+            if (!url) {
+                alert('Please enter a URL');
+                return;
+            }
+            
+            startFirecrawlProcessing(url);
+        });
+
+        // Markitdown form submission
+        document.getElementById('markitdown-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (isProcessing) {
+                stopMarkitdownProcessing();
+                return;
+            }
+            
+            const url = document.getElementById('markitdown-url').value.trim();
+            if (!url) {
+                alert('Please enter a URL');
+                return;
+            }
+            
+            startMarkitdownProcessing(url);
+        });
+
+        // Environment check
+        document.getElementById('check-env-btn').addEventListener('click', async () => {
+            const condaEnv = document.getElementById('markitdown-condaEnv').value.trim();
+            if (!condaEnv) {
+                alert('Please enter a conda environment name');
+                return;
+            }
+            
+            await checkMarkitdownEnvironment(condaEnv);
         });
 
         async function startProcessing(urls) {
@@ -285,7 +597,13 @@
                 includeImages: document.getElementById('includeImages').checked,
                 includeLinks: document.getElementById('includeLinks').checked,
                 timeout: parseInt(document.getElementById('timeout').value),
-                saveToFile: document.getElementById('saveToFile').checked
+                saveToFile: document.getElementById('saveToFile').checked,
+                // Advanced options
+                waitTime: parseInt(document.getElementById('waitTime').value),
+                waitUntil: document.getElementById('waitUntil').value,
+                waitForContentSelectors: document.getElementById('waitForContentSelectors').checked,
+                scrollToBottom: document.getElementById('scrollToBottom').checked,
+                maxContentLength: parseInt(document.getElementById('maxContentLength').value)
             };
             
             const waitForSelector = document.getElementById('waitForSelector').value.trim();
@@ -399,6 +717,274 @@
                     modal.remove();
                 }
             });
+        }
+
+        async function startFirecrawlProcessing(url) {
+            isProcessing = true;
+            abortController = new AbortController();
+            
+            const submitBtn = document.getElementById('firecrawl-submit-btn');
+            submitBtn.innerHTML = '<i class="fas fa-stop mr-2"></i>Stop Processing';
+            submitBtn.classList.remove('bg-orange-600', 'hover:bg-orange-700');
+            submitBtn.classList.add('bg-red-600', 'hover:bg-red-700');
+            
+            document.getElementById('progress-section').classList.remove('hidden');
+            document.getElementById('results-section').classList.remove('hidden');
+            
+            updateProgress(0, 1);
+            document.getElementById('current-url').innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i>Processing with Firecrawl: ${url}`;
+            
+            try {
+                const result = await extractFirecrawlContent(url, abortController.signal);
+                addResult(result, 'success');
+                updateProgress(1, 1);
+            } catch (error) {
+                if (error.name === 'AbortError') return;
+                addResult({ url, error: error.message }, 'error');
+                updateProgress(1, 1);
+            }
+            
+            stopFirecrawlProcessing();
+        }
+
+        function stopFirecrawlProcessing() {
+            isProcessing = false;
+            if (abortController) {
+                abortController.abort();
+            }
+            
+            const submitBtn = document.getElementById('firecrawl-submit-btn');
+            submitBtn.innerHTML = '<i class="fas fa-fire mr-2"></i>Extract with Firecrawl';
+            submitBtn.classList.remove('bg-red-600', 'hover:bg-red-700');
+            submitBtn.classList.add('bg-orange-600', 'hover:bg-orange-700');
+            
+            document.getElementById('current-url').innerHTML = '<i class="fas fa-check-circle text-green-600 mr-2"></i>Firecrawl processing complete';
+        }
+
+        async function extractFirecrawlContent(url, signal) {
+            const formats = [];
+            if (document.getElementById('firecrawl-markdown').checked) formats.push('markdown');
+            if (document.getElementById('firecrawl-html').checked) formats.push('html');
+            
+            const includeTags = document.getElementById('firecrawl-includeTags').value.trim()
+                .split(',').map(tag => tag.trim()).filter(tag => tag);
+            const excludeTags = document.getElementById('firecrawl-excludeTags').value.trim()
+                .split(',').map(tag => tag.trim()).filter(tag => tag);
+            
+            const options = {
+                formats: formats.length > 0 ? formats : ['markdown'],
+                onlyMainContent: document.getElementById('firecrawl-onlyMainContent').checked,
+                waitFor: parseInt(document.getElementById('firecrawl-waitFor').value),
+                timeout: parseInt(document.getElementById('firecrawl-timeout').value),
+                screenshot: document.getElementById('firecrawl-screenshot').checked,
+                saveToFile: document.getElementById('firecrawl-saveToFile').checked,
+                ...(includeTags.length > 0 && { includeTags }),
+                ...(excludeTags.length > 0 && { excludeTags })
+            };
+            
+            const saveDirectory = document.getElementById('firecrawl-saveDirectory').value.trim();
+            if (saveDirectory) {
+                options.saveDirectory = saveDirectory;
+            }
+            
+            const response = await fetch('/api/firecrawl/extract', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ url, options }),
+                signal
+            });
+            
+            const data = await response.json();
+            
+            if (!response.ok || !data.success) {
+                throw new Error(data.error?.message || 'Firecrawl extraction failed');
+            }
+            
+            return data.data;
+        }
+
+        async function startMarkitdownProcessing(url) {
+            isProcessing = true;
+            abortController = new AbortController();
+            
+            const submitBtn = document.getElementById('markitdown-submit-btn');
+            submitBtn.innerHTML = '<i class="fas fa-stop mr-2"></i>Stop Processing';
+            submitBtn.classList.remove('bg-purple-600', 'hover:bg-purple-700');
+            submitBtn.classList.add('bg-red-600', 'hover:bg-red-700');
+            
+            document.getElementById('progress-section').classList.remove('hidden');
+            document.getElementById('results-section').classList.remove('hidden');
+            
+            updateProgress(0, 1);
+            document.getElementById('current-url').innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i>Processing with Markitdown: ${url}`;
+            
+            try {
+                const result = await extractMarkitdownContent(url, abortController.signal);
+                addResult(result, 'success');
+                updateProgress(1, 1);
+            } catch (error) {
+                if (error.name === 'AbortError') return;
+                addResult({ url, error: error.message }, 'error');
+                updateProgress(1, 1);
+            }
+            
+            stopMarkitdownProcessing();
+        }
+
+        function stopMarkitdownProcessing() {
+            isProcessing = false;
+            if (abortController) {
+                abortController.abort();
+            }
+            
+            const submitBtn = document.getElementById('markitdown-submit-btn');
+            submitBtn.innerHTML = '<i class="fab fa-python mr-2"></i>Extract with Markitdown';
+            submitBtn.classList.remove('bg-red-600', 'hover:bg-red-700');
+            submitBtn.classList.add('bg-purple-600', 'hover:bg-purple-700');
+            
+            document.getElementById('current-url').innerHTML = '<i class="fas fa-check-circle text-green-600 mr-2"></i>Markitdown processing complete';
+        }
+
+        async function extractMarkitdownContent(url, signal) {
+            const condaEnv = document.getElementById('markitdown-condaEnv').value.trim();
+            const customTimeout = document.getElementById('markitdown-customTimeout').value;
+            const userAgent = document.getElementById('markitdown-userAgent').value.trim();
+            
+            const options = {
+                condaEnv: condaEnv || 'py312-tools',
+                extractImages: document.getElementById('markitdown-extractImages').checked,
+                extractLinks: document.getElementById('markitdown-extractLinks').checked,
+                extractTables: document.getElementById('markitdown-extractTables').checked,
+                timeout: parseInt(document.getElementById('markitdown-timeout').value),
+                saveToFile: document.getElementById('markitdown-saveToFile').checked,
+                ...(customTimeout && { customTimeout: parseInt(customTimeout) }),
+                ...(userAgent && { userAgent })
+            };
+            
+            const saveDirectory = document.getElementById('markitdown-saveDirectory').value.trim();
+            if (saveDirectory) {
+                options.saveDirectory = saveDirectory;
+            }
+            
+            const response = await fetch('/api/markitdown/extract', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ url, options }),
+                signal
+            });
+            
+            const data = await response.json();
+            
+            if (!response.ok || !data.success) {
+                throw new Error(data.error?.message || 'Markitdown extraction failed');
+            }
+            
+            return data.data;
+        }
+
+        async function checkMarkitdownEnvironment(condaEnv) {
+            const checkBtn = document.getElementById('check-env-btn');
+            const statusDiv = document.getElementById('env-status');
+            const statusContent = document.getElementById('env-status-content');
+            
+            // Show loading state
+            checkBtn.disabled = true;
+            checkBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Checking...';
+            
+            try {
+                const response = await fetch('/api/markitdown/check-env', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ condaEnv })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const result = data.data;
+                    let statusClass, statusIcon, statusText;
+                    
+                    if (result.overall === 'ready') {
+                        statusClass = 'bg-green-50 border-green-200 text-green-800';
+                        statusIcon = 'fas fa-check-circle text-green-600';
+                        statusText = 'Environment is ready!';
+                    } else {
+                        statusClass = 'bg-red-50 border-red-200 text-red-800';
+                        statusIcon = 'fas fa-exclamation-circle text-red-600';
+                        statusText = 'Environment has issues';
+                    }
+                    
+                    statusDiv.className = `mt-4 p-3 rounded-lg border ${statusClass}`;
+                    statusDiv.classList.remove('hidden');
+                    
+                    statusContent.innerHTML = `
+                        <div class="flex items-start space-x-3">
+                            <i class="${statusIcon} mt-1"></i>
+                            <div class="flex-1">
+                                <h5 class="font-medium">${statusText}</h5>
+                                <div class="mt-2 text-sm space-y-1">
+                                    <div>
+                                        <strong>Environment "${condaEnv}":</strong> 
+                                        ${result.environment.exists ? 
+                                            '<span class="text-green-600">✓ Found</span>' : 
+                                            '<span class="text-red-600">✗ Not found</span>'
+                                        }
+                                    </div>
+                                    <div>
+                                        <strong>Markitdown:</strong> 
+                                        ${result.markitdown.installed ? 
+                                            `<span class="text-green-600">✓ Installed (${result.markitdown.version})</span>` : 
+                                            '<span class="text-red-600">✗ Not installed</span>'
+                                        }
+                                    </div>
+                                    ${(!result.environment.exists || !result.markitdown.installed) ? `
+                                        <div class="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-yellow-800 text-xs">
+                                            <strong>Setup Instructions:</strong><br>
+                                            ${!result.environment.exists ? `• Create conda environment: <code>conda create -n ${condaEnv} python=3.12</code><br>` : ''}
+                                            ${!result.markitdown.installed ? `• Install markitdown: <code>conda activate ${condaEnv} && pip install markitdown</code>` : ''}
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    statusDiv.className = 'mt-4 p-3 rounded-lg border bg-red-50 border-red-200 text-red-800';
+                    statusDiv.classList.remove('hidden');
+                    statusContent.innerHTML = `
+                        <div class="flex items-start space-x-3">
+                            <i class="fas fa-exclamation-triangle text-red-600 mt-1"></i>
+                            <div>
+                                <h5 class="font-medium">Check failed</h5>
+                                <p class="text-sm mt-1">${data.error?.message || 'Unknown error occurred'}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+            } catch (error) {
+                statusDiv.className = 'mt-4 p-3 rounded-lg border bg-red-50 border-red-200 text-red-800';
+                statusDiv.classList.remove('hidden');
+                statusContent.innerHTML = `
+                    <div class="flex items-start space-x-3">
+                        <i class="fas fa-exclamation-triangle text-red-600 mt-1"></i>
+                        <div>
+                            <h5 class="font-medium">Connection error</h5>
+                            <p class="text-sm mt-1">${error.message}</p>
+                        </div>
+                    </div>
+                `;
+            } finally {
+                // Reset button state
+                checkBtn.disabled = false;
+                checkBtn.innerHTML = '<i class="fas fa-check-circle mr-2"></i>Check Environment';
+            }
         }
 
         function clearResults() {

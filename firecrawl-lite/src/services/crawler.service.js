@@ -57,7 +57,7 @@ class CrawlerService {
       // Navigate to URL
       console.log(`Navigating to: ${url}`);
       const response = await page.goto(url, {
-        waitUntil: 'domcontentloaded',
+        waitUntil: options.waitUntil || ['networkidle0', 'domcontentloaded'],
         timeout: this.options.timeout
       });
       

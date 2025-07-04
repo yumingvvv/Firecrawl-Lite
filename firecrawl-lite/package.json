@@ -20,11 +20,13 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@mendable/firecrawl-js": "^1.21.1",
     "@mozilla/readability": "^0.6.0",
     "axios": "^1.10.0",
     "bull": "^4.16.5",
     "cheerio": "^1.1.0",
     "cors": "^2.8.5",
+    "dotenv": "^17.0.1",
     "express": "^4.21.2",
     "express-rate-limit": "^7.5.1",
     "helmet": "^8.1.0",
@@ -36,6 +38,7 @@
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "turndown": "^7.2.0",
+    "uuid": "^11.1.0",
     "winston": "^3.17.0"
   },
   "devDependencies": {

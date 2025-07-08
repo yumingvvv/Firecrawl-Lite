@@ -205,6 +205,71 @@ class FirecrawlService {
     }
   }
 
+  async mapWebsite(url, options = {}) {
+    const startTime = Date.now();
+    
+    try {
+      this.stats.totalRequests++;
+      
+      if (!this.isValidUrl(url)) {
+        throw new Error('Invalid URL provided');
+      }
+      
+      // Prepare map options
+      const mapOptions = {
+        ...(options.search && { search: options.search }),
+        ...(options.limit && { limit: options.limit })
+      };
+      
+      console.log(`Firecrawl: Starting map of ${url}...`);
+      const mapResult = await this.client.mapUrl(url, mapOptions);
+      
+      if (!mapResult.success) {
+        throw new Error(mapResult.error || 'Firecrawl mapping failed');
+      }
+      
+      const processingTime = Date.now() - startTime;
+      this.updateStats(processingTime, true);
+      
+      // Note: Firecrawl returns { success: true, links: [...] } not data
+      const links = mapResult.links || mapResult.data || [];
+      
+      console.log(`Firecrawl: Successfully mapped ${url} (${links.length} links) in ${processingTime}ms`);
+      
+      return {
+        success: true,
+        data: {
+          baseUrl: url,
+          links: links,
+          summary: {
+            totalLinks: links.length,
+            processingTime,
+            provider: 'firecrawl',
+            search: options.search || null
+          },
+          mappedAt: new Date().toISOString()
+        }
+      };
+      
+    } catch (error) {
+      const processingTime = Date.now() - startTime;
+      this.updateStats(processingTime, false);
+      
+      console.error(`Firecrawl: Failed to map ${url}:`, error.message);
+      
+      return {
+        success: false,
+        error: {
+          message: error.message,
+          url,
+          processingTime,
+          provider: 'firecrawl',
+          timestamp: new Date().toISOString()
+        }
+      };
+    }
+  }
+
   isValidUrl(url) {
     try {
       const urlObj = new URL(url);

@@ -187,21 +187,97 @@
                     <!-- Firecrawl Tab -->
                     <div id="firecrawl-content" class="tab-content hidden">
                         <form id="firecrawl-form" class="space-y-6">
-                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
                                 <div class="flex items-start">
-                                    <i class="fas fa-info-circle text-blue-600 mt-1 mr-3"></i>
+                                    <i class="fas fa-fire text-orange-600 mt-1 mr-3"></i>
                                     <div>
-                                        <h4 class="text-blue-900 font-medium">Firecrawl API Integration</h4>
-                                        <p class="text-blue-700 text-sm mt-1">Uses Firecrawl's advanced crawling capabilities for better content extraction. Requires a valid API key in .env file.</p>
+                                        <h4 class="text-orange-900 font-medium">Firecrawl API Integration</h4>
+                                        <p class="text-orange-700 text-sm mt-1">Uses Firecrawl's advanced crawling capabilities for better content extraction. Requires a valid API key in .env file.</p>
                                     </div>
                                 </div>
                             </div>
 
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    URL to Extract
-                                </label>
-                                <input type="url" id="firecrawl-url" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" placeholder="https://docs.example.com/guide">
+                            <!-- Mode Selection -->
+                            <div class="bg-white border border-gray-200 rounded-lg p-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-3">Operation Mode</label>
+                                <div class="grid grid-cols-3 gap-4">
+                                    <label class="firecrawl-mode-option relative border rounded-lg p-3 cursor-pointer hover:border-orange-300 transition-colors">
+                                        <input type="radio" name="firecrawl-mode" value="single" checked class="sr-only">
+                                        <div class="text-center">
+                                            <i class="fas fa-file-alt text-2xl text-gray-600 mb-2"></i>
+                                            <p class="font-medium text-sm">Single URL</p>
+                                            <p class="text-xs text-gray-500 mt-1">Extract one page</p>
+                                        </div>
+                                        <div class="firecrawl-mode-indicator absolute inset-0 border-2 border-orange-500 rounded-lg hidden"></div>
+                                    </label>
+                                    <label class="firecrawl-mode-option relative border rounded-lg p-3 cursor-pointer hover:border-orange-300 transition-colors">
+                                        <input type="radio" name="firecrawl-mode" value="batch" class="sr-only">
+                                        <div class="text-center">
+                                            <i class="fas fa-layer-group text-2xl text-gray-600 mb-2"></i>
+                                            <p class="font-medium text-sm">Batch URLs</p>
+                                            <p class="text-xs text-gray-500 mt-1">Extract multiple pages</p>
+                                        </div>
+                                        <div class="firecrawl-mode-indicator absolute inset-0 border-2 border-orange-500 rounded-lg hidden"></div>
+                                    </label>
+                                    <label class="firecrawl-mode-option relative border rounded-lg p-3 cursor-pointer hover:border-orange-300 transition-colors">
+                                        <input type="radio" name="firecrawl-mode" value="map" class="sr-only">
+                                        <div class="text-center">
+                                            <i class="fas fa-sitemap text-2xl text-gray-600 mb-2"></i>
+                                            <p class="font-medium text-sm">Map Website</p>
+                                            <p class="text-xs text-gray-500 mt-1">Extract all URLs</p>
+                                        </div>
+                                        <div class="firecrawl-mode-indicator absolute inset-0 border-2 border-orange-500 rounded-lg hidden"></div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Dynamic Content Area -->
+                            <div id="firecrawl-dynamic-content">
+                                <!-- Single URL Mode (default) -->
+                                <div id="firecrawl-single-mode" class="firecrawl-mode-content">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                            URL to Extract
+                                        </label>
+                                        <input type="url" id="firecrawl-single-url" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors" placeholder="https://docs.example.com/guide">
+                                    </div>
+                                </div>
+
+                                <!-- Batch URLs Mode -->
+                                <div id="firecrawl-batch-mode" class="firecrawl-mode-content hidden">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                            URLs to Extract (one per line)
+                                        </label>
+                                        <textarea id="firecrawl-batch-urls" rows="6" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors" placeholder="https://example.com/page1&#10;https://example.com/page2&#10;https://example.com/page3"></textarea>
+                                        <p class="mt-1 text-sm text-gray-500">Enter multiple URLs, one per line. Maximum 25 URLs per batch.</p>
+                                    </div>
+                                </div>
+
+                                <!-- Map Website Mode -->
+                                <div id="firecrawl-map-mode" class="firecrawl-mode-content hidden">
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                                Website URL to Map
+                                            </label>
+                                            <input type="url" id="firecrawl-map-url" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors" placeholder="https://example.com">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                                Search Filter (optional)
+                                            </label>
+                                            <input type="text" id="firecrawl-map-search" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors" placeholder="e.g., docs, api, guide">
+                                            <p class="mt-1 text-sm text-gray-500">Filter URLs containing specific keywords</p>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                                Limit (optional)
+                                            </label>
+                                            <input type="number" id="firecrawl-map-limit" min="1" max="1000" placeholder="100" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors">
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             <!-- Firecrawl Options -->
@@ -211,11 +287,11 @@
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Output Formats</label>
                                     <div class="space-y-2">
                                         <label class="flex items-center space-x-3">
-                                            <input type="checkbox" id="firecrawl-markdown" checked class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                            <input type="checkbox" id="firecrawl-markdown" checked class="w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500">
                                             <span class="text-sm font-medium text-gray-700">Markdown</span>
                                         </label>
                                         <label class="flex items-center space-x-3">
-                                            <input type="checkbox" id="firecrawl-html" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                            <input type="checkbox" id="firecrawl-html" class="w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500">
                                             <span class="text-sm font-medium text-gray-700">HTML</span>
                                         </label>
                                     </div>
@@ -224,17 +300,17 @@
                                 <!-- Wait Time -->
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Wait Time (ms)</label>
-                                    <input type="number" id="firecrawl-waitFor" value="3000" min="1000" max="30000" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <input type="number" id="firecrawl-waitFor" value="3000" min="1000" max="30000" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
                                 </div>
 
                                 <!-- Content Options -->
                                 <div class="space-y-2">
                                     <label class="flex items-center space-x-3">
-                                        <input type="checkbox" id="firecrawl-onlyMainContent" checked class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                        <input type="checkbox" id="firecrawl-onlyMainContent" checked class="w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500">
                                         <span class="text-sm font-medium text-gray-700">Only Main Content</span>
                                     </label>
                                     <label class="flex items-center space-x-3">
-                                        <input type="checkbox" id="firecrawl-screenshot" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                        <input type="checkbox" id="firecrawl-screenshot" class="w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500">
                                         <span class="text-sm font-medium text-gray-700">Include Screenshot</span>
                                     </label>
                                 </div>
@@ -242,19 +318,21 @@
                                 <!-- Timeout -->
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Timeout (ms)</label>
-                                    <input type="number" id="firecrawl-timeout" value="30000" min="5000" max="60000" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <input type="number" id="firecrawl-timeout" value="30000" min="5000" max="60000" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
                                 </div>
 
                                 <!-- Save Options -->
                                 <div class="flex items-center space-x-3">
-                                    <input type="checkbox" id="firecrawl-saveToFile" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                                    <label for="firecrawl-saveToFile" class="text-sm font-medium text-gray-700">Save to file</label>
+                                    <input type="checkbox" id="firecrawl-saveToFile" class="w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500">
+                                    <label for="firecrawl-saveToFile" class="text-sm font-medium text-gray-700">
+                                        <span id="firecrawl-save-label">Save to file</span>
+                                    </label>
                                 </div>
 
                                 <!-- Save Directory -->
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Save Directory</label>
-                                    <input type="text" id="firecrawl-saveDirectory" placeholder="Leave empty for date-based folder" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <input type="text" id="firecrawl-saveDirectory" placeholder="Leave empty for date-based folder" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
                                 </div>
                             </div>
 
@@ -265,14 +343,14 @@
                                     <!-- Include Tags -->
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-2">Include Tags (optional)</label>
-                                        <input type="text" id="firecrawl-includeTags" placeholder="article, main, .content" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <input type="text" id="firecrawl-includeTags" placeholder="article, main, .content" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
                                         <p class="mt-1 text-xs text-gray-500">Comma-separated list of tags/selectors to include</p>
                                     </div>
 
                                     <!-- Exclude Tags -->
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-2">Exclude Tags</label>
-                                        <input type="text" id="firecrawl-excludeTags" value="nav, footer, header, .sidebar" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <input type="text" id="firecrawl-excludeTags" value="nav, footer, header, .sidebar" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
                                         <p class="mt-1 text-xs text-gray-500">Comma-separated list of tags/selectors to exclude</p>
                                     </div>
                                 </div>
@@ -281,7 +359,7 @@
                             <!-- Submit Button -->
                             <div class="flex justify-end">
                                 <button type="submit" id="firecrawl-submit-btn" class="px-6 py-3 bg-orange-600 text-white font-medium rounded-lg hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors">
-                                    <i class="fas fa-fire mr-2"></i>Extract with Firecrawl
+                                    <i class="fas fa-fire mr-2"></i><span id="firecrawl-submit-text">Extract with Firecrawl</span>
                                 </button>
                             </div>
                         </form>
@@ -300,11 +378,87 @@
                                 </div>
                             </div>
 
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    URL to Extract
-                                </label>
-                                <input type="url" id="markitdown-url" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors" placeholder="https://docs.example.com/guide">
+                            <!-- Mode Selection -->
+                            <div class="bg-white border border-gray-200 rounded-lg p-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-3">Operation Mode</label>
+                                <div class="grid grid-cols-3 gap-4">
+                                    <label class="markitdown-mode-option relative border rounded-lg p-3 cursor-pointer hover:border-purple-300 transition-colors">
+                                        <input type="radio" name="markitdown-mode" value="single" checked class="sr-only">
+                                        <div class="text-center">
+                                            <i class="fas fa-file-alt text-2xl text-gray-600 mb-2"></i>
+                                            <p class="font-medium text-sm">Single URL</p>
+                                            <p class="text-xs text-gray-500 mt-1">Extract one page</p>
+                                        </div>
+                                        <div class="markitdown-mode-indicator absolute inset-0 border-2 border-purple-500 rounded-lg hidden"></div>
+                                    </label>
+                                    <label class="markitdown-mode-option relative border rounded-lg p-3 cursor-pointer hover:border-purple-300 transition-colors">
+                                        <input type="radio" name="markitdown-mode" value="batch" class="sr-only">
+                                        <div class="text-center">
+                                            <i class="fas fa-layer-group text-2xl text-gray-600 mb-2"></i>
+                                            <p class="font-medium text-sm">Batch URLs</p>
+                                            <p class="text-xs text-gray-500 mt-1">Extract multiple pages</p>
+                                        </div>
+                                        <div class="markitdown-mode-indicator absolute inset-0 border-2 border-purple-500 rounded-lg hidden"></div>
+                                    </label>
+                                    <label class="markitdown-mode-option relative border rounded-lg p-3 cursor-pointer hover:border-purple-300 transition-colors">
+                                        <input type="radio" name="markitdown-mode" value="map" class="sr-only">
+                                        <div class="text-center">
+                                            <i class="fas fa-sitemap text-2xl text-gray-600 mb-2"></i>
+                                            <p class="font-medium text-sm">Map Website</p>
+                                            <p class="text-xs text-gray-500 mt-1">Extract all URLs</p>
+                                        </div>
+                                        <div class="markitdown-mode-indicator absolute inset-0 border-2 border-purple-500 rounded-lg hidden"></div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Dynamic Content Area -->
+                            <div id="markitdown-dynamic-content">
+                                <!-- Single URL Mode (default) -->
+                                <div id="markitdown-single-mode" class="markitdown-mode-content">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                            URL to Extract
+                                        </label>
+                                        <input type="url" id="markitdown-single-url" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors" placeholder="https://docs.example.com/guide">
+                                    </div>
+                                </div>
+
+                                <!-- Batch URLs Mode -->
+                                <div id="markitdown-batch-mode" class="markitdown-mode-content hidden">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                            URLs to Extract (one per line)
+                                        </label>
+                                        <textarea id="markitdown-batch-urls" rows="6" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors" placeholder="https://example.com/page1&#10;https://example.com/page2&#10;https://example.com/page3"></textarea>
+                                        <p class="mt-1 text-sm text-gray-500">Enter multiple URLs, one per line. Maximum 25 URLs per batch.</p>
+                                    </div>
+                                </div>
+
+                                <!-- Map Website Mode -->
+                                <div id="markitdown-map-mode" class="markitdown-mode-content hidden">
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                                Website URL to Map
+                                            </label>
+                                            <input type="url" id="markitdown-map-url" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors" placeholder="https://example.com">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                                Search Filter (optional)
+                                            </label>
+                                            <input type="text" id="markitdown-map-search" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors" placeholder="e.g., docs, api, guide">
+                                            <p class="mt-1 text-sm text-gray-500">Filter URLs containing specific keywords</p>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                                Limit (optional)
+                                            </label>
+                                            <input type="number" id="markitdown-map-limit" min="1" max="1000" placeholder="100" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors">
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             <!-- Environment Configuration -->
@@ -379,7 +533,9 @@
                                 <!-- Save Options -->
                                 <div class="flex items-center space-x-3">
                                     <input type="checkbox" id="markitdown-saveToFile" class="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500">
-                                    <label for="markitdown-saveToFile" class="text-sm font-medium text-gray-700">Save to file</label>
+                                    <label for="markitdown-saveToFile" class="text-sm font-medium text-gray-700">
+                                        <span id="markitdown-save-label">Save to file</span>
+                                    </label>
                                 </div>
 
                                 <!-- Save Directory -->
@@ -392,7 +548,7 @@
                             <!-- Submit Button -->
                             <div class="flex justify-end">
                                 <button type="submit" id="markitdown-submit-btn" class="px-6 py-3 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-colors">
-                                    <i class="fab fa-python mr-2"></i>Extract with Markitdown
+                                    <i class="fab fa-python mr-2"></i><span id="markitdown-submit-text">Extract with Markitdown</span>
                                 </button>
                             </div>
                         </form>
@@ -435,6 +591,28 @@
     <script>
         let isProcessing = false;
         let abortController = null;
+        
+        // Safe base64 encoding function that handles Unicode characters
+        function safeBase64Encode(str) {
+            try {
+                // First encode as UTF-8, then base64
+                return btoa(unescape(encodeURIComponent(str)));
+            } catch (error) {
+                console.warn('Failed to encode content for view:', error);
+                return btoa('Content contains special characters that cannot be displayed.');
+            }
+        }
+        
+        // Safe base64 decoding function that handles Unicode characters
+        function safeBase64Decode(str) {
+            try {
+                // First decode base64, then decode UTF-8
+                return decodeURIComponent(escape(atob(str)));
+            } catch (error) {
+                console.warn('Failed to decode content for view:', error);
+                return 'Content contains special characters that cannot be displayed.';
+            }
+        }
 
         // Initialize event listeners when DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
@@ -487,6 +665,58 @@
             startProcessing(urls);
         });
 
+        // Firecrawl mode switching
+        const firecrawlModeRadios = document.querySelectorAll('input[name="firecrawl-mode"]');
+        firecrawlModeRadios.forEach(radio => {
+            radio.addEventListener('change', handleFirecrawlModeChange);
+        });
+        
+        // Initialize first mode
+        handleFirecrawlModeChange();
+        
+        function handleFirecrawlModeChange() {
+            const selectedMode = document.querySelector('input[name="firecrawl-mode"]:checked').value;
+            
+            // Update UI indicators
+            document.querySelectorAll('.firecrawl-mode-option').forEach(option => {
+                const indicator = option.querySelector('.firecrawl-mode-indicator');
+                const radio = option.querySelector('input[type="radio"]');
+                if (radio.checked) {
+                    indicator.classList.remove('hidden');
+                    option.classList.add('border-orange-500');
+                } else {
+                    indicator.classList.add('hidden');
+                    option.classList.remove('border-orange-500');
+                }
+            });
+            
+            // Show/hide content areas
+            document.querySelectorAll('.firecrawl-mode-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            
+            const saveLabel = document.getElementById('firecrawl-save-label');
+            const submitText = document.getElementById('firecrawl-submit-text');
+            
+            switch(selectedMode) {
+                case 'single':
+                    document.getElementById('firecrawl-single-mode').classList.remove('hidden');
+                    saveLabel.textContent = 'Save to file';
+                    submitText.textContent = 'Extract with Firecrawl';
+                    break;
+                case 'batch':
+                    document.getElementById('firecrawl-batch-mode').classList.remove('hidden');
+                    saveLabel.textContent = 'Save to files';
+                    submitText.textContent = 'Extract Batch with Firecrawl';
+                    break;
+                case 'map':
+                    document.getElementById('firecrawl-map-mode').classList.remove('hidden');
+                    saveLabel.textContent = 'Save to file';
+                    submitText.textContent = 'Map Website with Firecrawl';
+                    break;
+            }
+        }
+        
         // Firecrawl form submission
         document.getElementById('firecrawl-form').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -496,15 +726,95 @@
                 return;
             }
             
-            const url = document.getElementById('firecrawl-url').value.trim();
-            if (!url) {
-                alert('Please enter a URL');
-                return;
-            }
+            const selectedMode = document.querySelector('input[name="firecrawl-mode"]:checked').value;
             
-            startFirecrawlProcessing(url);
+            switch(selectedMode) {
+                case 'single':
+                    const singleUrl = document.getElementById('firecrawl-single-url').value.trim();
+                    if (!singleUrl) {
+                        alert('Please enter a URL');
+                        return;
+                    }
+                    startFirecrawlProcessing(singleUrl);
+                    break;
+                    
+                case 'batch':
+                    const batchUrls = document.getElementById('firecrawl-batch-urls').value.trim();
+                    if (!batchUrls) {
+                        alert('Please enter at least one URL');
+                        return;
+                    }
+                    const urls = batchUrls.split('\n').filter(url => url.trim());
+                    if (urls.length > 25) {
+                        alert('Maximum 25 URLs allowed per batch');
+                        return;
+                    }
+                    startFirecrawlBatchProcessing(urls);
+                    break;
+                    
+                case 'map':
+                    const mapUrl = document.getElementById('firecrawl-map-url').value.trim();
+                    if (!mapUrl) {
+                        alert('Please enter a website URL to map');
+                        return;
+                    }
+                    startFirecrawlMapProcessing(mapUrl);
+                    break;
+            }
         });
 
+        // Markitdown mode switching
+        const markitdownModeRadios = document.querySelectorAll('input[name="markitdown-mode"]');
+        markitdownModeRadios.forEach(radio => {
+            radio.addEventListener('change', handleMarkitdownModeChange);
+        });
+        
+        // Initialize first mode
+        handleMarkitdownModeChange();
+        
+        function handleMarkitdownModeChange() {
+            const selectedMode = document.querySelector('input[name="markitdown-mode"]:checked').value;
+            
+            // Update UI indicators
+            document.querySelectorAll('.markitdown-mode-option').forEach(option => {
+                const indicator = option.querySelector('.markitdown-mode-indicator');
+                const radio = option.querySelector('input[type="radio"]');
+                if (radio.checked) {
+                    indicator.classList.remove('hidden');
+                    option.classList.add('border-purple-500');
+                } else {
+                    indicator.classList.add('hidden');
+                    option.classList.remove('border-purple-500');
+                }
+            });
+            
+            // Show/hide content areas
+            document.querySelectorAll('.markitdown-mode-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            
+            const saveLabel = document.getElementById('markitdown-save-label');
+            const submitText = document.getElementById('markitdown-submit-text');
+            
+            switch(selectedMode) {
+                case 'single':
+                    document.getElementById('markitdown-single-mode').classList.remove('hidden');
+                    saveLabel.textContent = 'Save to file';
+                    submitText.textContent = 'Extract with Markitdown';
+                    break;
+                case 'batch':
+                    document.getElementById('markitdown-batch-mode').classList.remove('hidden');
+                    saveLabel.textContent = 'Save to files';
+                    submitText.textContent = 'Extract Batch with Markitdown';
+                    break;
+                case 'map':
+                    document.getElementById('markitdown-map-mode').classList.remove('hidden');
+                    saveLabel.textContent = 'Save to file';
+                    submitText.textContent = 'Map Website with Markitdown';
+                    break;
+            }
+        }
+        
         // Markitdown form submission
         document.getElementById('markitdown-form').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -514,13 +824,41 @@
                 return;
             }
             
-            const url = document.getElementById('markitdown-url').value.trim();
-            if (!url) {
-                alert('Please enter a URL');
-                return;
-            }
+            const selectedMode = document.querySelector('input[name="markitdown-mode"]:checked').value;
             
-            startMarkitdownProcessing(url);
+            switch(selectedMode) {
+                case 'single':
+                    const singleUrl = document.getElementById('markitdown-single-url').value.trim();
+                    if (!singleUrl) {
+                        alert('Please enter a URL');
+                        return;
+                    }
+                    startMarkitdownProcessing(singleUrl);
+                    break;
+                    
+                case 'batch':
+                    const batchUrls = document.getElementById('markitdown-batch-urls').value.trim();
+                    if (!batchUrls) {
+                        alert('Please enter at least one URL');
+                        return;
+                    }
+                    const urls = batchUrls.split('\n').filter(url => url.trim());
+                    if (urls.length > 25) {
+                        alert('Maximum 25 URLs allowed per batch');
+                        return;
+                    }
+                    startMarkitdownBatchProcessing(urls);
+                    break;
+                    
+                case 'map':
+                    const mapUrl = document.getElementById('markitdown-map-url').value.trim();
+                    if (!mapUrl) {
+                        alert('Please enter a website URL to map');
+                        return;
+                    }
+                    startMarkitdownMapProcessing(mapUrl);
+                    break;
+            }
         });
 
         // Environment check
@@ -657,7 +995,7 @@
                                 ${data.savedFilePath ? `<span class="text-green-600"><i class="fas fa-save mr-1"></i>${data.savedFilePath}</span>` : ''}
                             </div>
                         </div>
-                        <button data-content="${btoa(data.markdown || '')}" class="view-btn ml-4 px-3 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded hover:bg-blue-200 transition-colors">
+                        <button data-content="${safeBase64Encode(data.markdown || '')}" class="view-btn ml-4 px-3 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded hover:bg-blue-200 transition-colors">
                             <i class="fas fa-eye mr-1"></i>View
                         </button>
                     </div>
@@ -688,7 +1026,7 @@
         }
 
         function viewContent(encodedContent) {
-            const content = atob(encodedContent);
+            const content = safeBase64Decode(encodedContent);
             const modal = document.createElement('div');
             modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50';
             modal.innerHTML = `
@@ -804,6 +1142,153 @@
             
             return data.data;
         }
+        
+        async function startFirecrawlBatchProcessing(urls) {
+            isProcessing = true;
+            abortController = new AbortController();
+            
+            const submitBtn = document.getElementById('firecrawl-submit-btn');
+            submitBtn.innerHTML = '<i class="fas fa-stop mr-2"></i>Stop Processing';
+            submitBtn.classList.remove('bg-orange-600', 'hover:bg-orange-700');
+            submitBtn.classList.add('bg-red-600', 'hover:bg-red-700');
+            
+            document.getElementById('progress-section').classList.remove('hidden');
+            document.getElementById('results-section').classList.remove('hidden');
+            
+            updateProgress(0, urls.length);
+            document.getElementById('current-url').innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i>Processing batch with Firecrawl...`;
+            
+            try {
+                const formats = [];
+                if (document.getElementById('firecrawl-markdown').checked) formats.push('markdown');
+                if (document.getElementById('firecrawl-html').checked) formats.push('html');
+                
+                const includeTags = document.getElementById('firecrawl-includeTags').value.trim()
+                    .split(',').map(tag => tag.trim()).filter(tag => tag);
+                const excludeTags = document.getElementById('firecrawl-excludeTags').value.trim()
+                    .split(',').map(tag => tag.trim()).filter(tag => tag);
+                
+                const options = {
+                    concurrent: 3,
+                    formats: formats.length > 0 ? formats : ['markdown'],
+                    onlyMainContent: document.getElementById('firecrawl-onlyMainContent').checked,
+                    waitFor: parseInt(document.getElementById('firecrawl-waitFor').value),
+                    timeout: parseInt(document.getElementById('firecrawl-timeout').value),
+                    screenshot: document.getElementById('firecrawl-screenshot').checked,
+                    saveToFile: document.getElementById('firecrawl-saveToFile').checked,
+                    ...(includeTags.length > 0 && { includeTags }),
+                    ...(excludeTags.length > 0 && { excludeTags })
+                };
+                
+                const saveDirectory = document.getElementById('firecrawl-saveDirectory').value.trim();
+                if (saveDirectory) {
+                    options.saveDirectory = saveDirectory;
+                }
+                
+                const response = await fetch('/api/firecrawl/batch', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ urls, options }),
+                    signal: abortController.signal
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok || !data.success) {
+                    throw new Error(data.error?.message || 'Batch processing failed');
+                }
+                
+                // Process results
+                data.data.results.forEach((result, index) => {
+                    if (result.success) {
+                        addResult(result.data, 'success');
+                    } else {
+                        addResult({ url: urls[index], error: result.error.message }, 'error');
+                    }
+                    updateProgress(index + 1, urls.length);
+                });
+                
+            } catch (error) {
+                if (error.name !== 'AbortError') {
+                    alert('Batch processing failed: ' + error.message);
+                }
+            }
+            
+            stopFirecrawlProcessing();
+        }
+        
+        async function startFirecrawlMapProcessing(url) {
+            isProcessing = true;
+            abortController = new AbortController();
+            
+            const submitBtn = document.getElementById('firecrawl-submit-btn');
+            submitBtn.innerHTML = '<i class="fas fa-stop mr-2"></i>Stop Mapping';
+            submitBtn.classList.remove('bg-orange-600', 'hover:bg-orange-700');
+            submitBtn.classList.add('bg-red-600', 'hover:bg-red-700');
+            
+            document.getElementById('progress-section').classList.remove('hidden');
+            document.getElementById('results-section').classList.remove('hidden');
+            
+            updateProgress(0, 1);
+            document.getElementById('current-url').innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i>Mapping website: ${url}`;
+            
+            try {
+                const search = document.getElementById('firecrawl-map-search').value.trim();
+                const limit = document.getElementById('firecrawl-map-limit').value;
+                
+                const options = {
+                    saveToFile: document.getElementById('firecrawl-saveToFile').checked,
+                    ...(search && { search }),
+                    ...(limit && { limit: parseInt(limit) })
+                };
+                
+                const saveDirectory = document.getElementById('firecrawl-saveDirectory').value.trim();
+                if (saveDirectory) {
+                    options.saveDirectory = saveDirectory;
+                }
+                
+                const response = await fetch('/api/firecrawl/map', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ url, options }),
+                    signal: abortController.signal
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok || !data.success) {
+                    throw new Error(data.error?.message || 'Website mapping failed');
+                }
+                
+                // Display map results
+                const mapResult = {
+                    url: data.data.baseUrl,
+                    title: `Website Map - ${data.data.summary.totalLinks} URLs found`,
+                    markdown: data.data.links.join('\n'),
+                    metadata: {
+                        processingTime: data.data.summary.processingTime,
+                        wordCount: data.data.summary.totalLinks,
+                        search: data.data.summary.search
+                    },
+                    savedFilePath: data.data.savedFilePath
+                };
+                
+                addResult(mapResult, 'success');
+                updateProgress(1, 1);
+                
+            } catch (error) {
+                if (error.name !== 'AbortError') {
+                    addResult({ url, error: error.message }, 'error');
+                    updateProgress(1, 1);
+                }
+            }
+            
+            stopFirecrawlProcessing();
+        }
 
         async function startMarkitdownProcessing(url) {
             isProcessing = true;
@@ -884,6 +1369,158 @@
             }
             
             return data.data;
+        }
+        
+        async function startMarkitdownBatchProcessing(urls) {
+            isProcessing = true;
+            abortController = new AbortController();
+            
+            const submitBtn = document.getElementById('markitdown-submit-btn');
+            submitBtn.innerHTML = '<i class="fas fa-stop mr-2"></i>Stop Processing';
+            submitBtn.classList.remove('bg-purple-600', 'hover:bg-purple-700');
+            submitBtn.classList.add('bg-red-600', 'hover:bg-red-700');
+            
+            document.getElementById('progress-section').classList.remove('hidden');
+            document.getElementById('results-section').classList.remove('hidden');
+            
+            updateProgress(0, urls.length);
+            document.getElementById('current-url').innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i>Processing batch with Markitdown...`;
+            
+            try {
+                const condaEnv = document.getElementById('markitdown-condaEnv').value.trim();
+                const customTimeout = document.getElementById('markitdown-customTimeout').value;
+                const userAgent = document.getElementById('markitdown-userAgent').value.trim();
+                
+                const options = {
+                    concurrent: 3,
+                    condaEnv: condaEnv || 'py312-tools',
+                    extractImages: document.getElementById('markitdown-extractImages').checked,
+                    extractLinks: document.getElementById('markitdown-extractLinks').checked,
+                    extractTables: document.getElementById('markitdown-extractTables').checked,
+                    timeout: parseInt(document.getElementById('markitdown-timeout').value),
+                    saveToFile: document.getElementById('markitdown-saveToFile').checked,
+                    ...(customTimeout && { customTimeout: parseInt(customTimeout) }),
+                    ...(userAgent && { userAgent })
+                };
+                
+                const saveDirectory = document.getElementById('markitdown-saveDirectory').value.trim();
+                if (saveDirectory) {
+                    options.saveDirectory = saveDirectory;
+                }
+                
+                const response = await fetch('/api/markitdown/batch', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ urls, options }),
+                    signal: abortController.signal
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok || !data.success) {
+                    throw new Error(data.error?.message || 'Batch processing failed');
+                }
+                
+                // Process results
+                data.data.results.forEach((result, index) => {
+                    if (result.success) {
+                        addResult(result.data, 'success');
+                    } else {
+                        addResult({ url: urls[index], error: result.error.message }, 'error');
+                    }
+                    updateProgress(index + 1, urls.length);
+                });
+                
+            } catch (error) {
+                if (error.name !== 'AbortError') {
+                    alert('Batch processing failed: ' + error.message);
+                }
+            }
+            
+            stopMarkitdownProcessing();
+        }
+        
+        async function startMarkitdownMapProcessing(url) {
+            isProcessing = true;
+            abortController = new AbortController();
+            
+            const submitBtn = document.getElementById('markitdown-submit-btn');
+            submitBtn.innerHTML = '<i class="fas fa-stop mr-2"></i>Stop Mapping';
+            submitBtn.classList.remove('bg-purple-600', 'hover:bg-purple-700');
+            submitBtn.classList.add('bg-red-600', 'hover:bg-red-700');
+            
+            document.getElementById('progress-section').classList.remove('hidden');
+            document.getElementById('results-section').classList.remove('hidden');
+            
+            updateProgress(0, 1);
+            document.getElementById('current-url').innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i>Mapping website: ${url}`;
+            
+            try {
+                const search = document.getElementById('markitdown-map-search').value.trim();
+                const limit = document.getElementById('markitdown-map-limit').value;
+                const condaEnv = document.getElementById('markitdown-condaEnv').value.trim();
+                const customTimeout = document.getElementById('markitdown-customTimeout').value;
+                const userAgent = document.getElementById('markitdown-userAgent').value.trim();
+                
+                const options = {
+                    condaEnv: condaEnv || 'py312-tools',
+                    extractImages: document.getElementById('markitdown-extractImages').checked,
+                    extractLinks: document.getElementById('markitdown-extractLinks').checked,
+                    extractTables: document.getElementById('markitdown-extractTables').checked,
+                    timeout: parseInt(document.getElementById('markitdown-timeout').value),
+                    saveToFile: document.getElementById('markitdown-saveToFile').checked,
+                    ...(search && { search }),
+                    ...(limit && { limit: parseInt(limit) }),
+                    ...(customTimeout && { customTimeout: parseInt(customTimeout) }),
+                    ...(userAgent && { userAgent })
+                };
+                
+                const saveDirectory = document.getElementById('markitdown-saveDirectory').value.trim();
+                if (saveDirectory) {
+                    options.saveDirectory = saveDirectory;
+                }
+                
+                const response = await fetch('/api/markitdown/map', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ url, options }),
+                    signal: abortController.signal
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok || !data.success) {
+                    throw new Error(data.error?.message || 'Website mapping failed');
+                }
+                
+                // Display map results
+                const mapResult = {
+                    url: data.data.baseUrl,
+                    title: `Website Map - ${data.data.summary.totalLinks} URLs found (${data.data.summary.totalFound} total)`,
+                    markdown: data.data.links.join('\n'),
+                    metadata: {
+                        processingTime: data.data.summary.processingTime,
+                        wordCount: data.data.summary.totalLinks,
+                        search: data.data.summary.search
+                    },
+                    savedFilePath: data.data.savedFilePath
+                };
+                
+                addResult(mapResult, 'success');
+                updateProgress(1, 1);
+                
+            } catch (error) {
+                if (error.name !== 'AbortError') {
+                    addResult({ url, error: error.message }, 'error');
+                    updateProgress(1, 1);
+                }
+            }
+            
+            stopMarkitdownProcessing();
         }
 
         async function checkMarkitdownEnvironment(condaEnv) {

@@ -325,6 +325,154 @@ class MarkitdownService {
     };
   }
 
+  async extractMultipleUrls(urls, options = {}) {
+    const concurrent = Math.min(options.concurrent || 3, urls.length, 5);
+    const results = [];
+    
+    console.log(`Markitdown: Starting batch crawl of ${urls.length} URLs with concurrency: ${concurrent}`);
+    
+    // Process URLs in batches
+    for (let i = 0; i < urls.length; i += concurrent) {
+      const batch = urls.slice(i, i + concurrent);
+      
+      console.log(`Markitdown: Processing batch ${Math.floor(i / concurrent) + 1} (${batch.length} URLs)`);
+      
+      const batchPromises = batch.map(url => this.extractUrl(url, options));
+      const batchResults = await Promise.all(batchPromises);
+      
+      results.push(...batchResults);
+      
+      // Brief pause between batches to avoid overwhelming the system
+      if (i + concurrent < urls.length) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+    }
+    
+    const successful = results.filter(r => r.success).length;
+    const failed = results.filter(r => !r.success).length;
+    
+    console.log(`Markitdown: Batch crawl completed. Successful: ${successful}, Failed: ${failed}`);
+    
+    return {
+      success: true,
+      results,
+      summary: {
+        total: urls.length,
+        successful,
+        failed,
+        successRate: (successful / urls.length * 100).toFixed(2) + '%'
+      }
+    };
+  }
+
+  async mapWebsite(url, options = {}) {
+    const startTime = Date.now();
+    
+    try {
+      this.stats.totalRequests++;
+      
+      if (!this.isValidUrl(url)) {
+        throw new Error('Invalid URL provided');
+      }
+      
+      console.log(`Markitdown: Mapping ${url}...`);
+      
+      // First extract the page content
+      const extractResult = await this.extractUrl(url, options);
+      
+      if (!extractResult.success) {
+        throw new Error(extractResult.error.message);
+      }
+      
+      // Extract all links from the markdown content
+      const links = this.extractLinksFromMarkdown(extractResult.data.markdown);
+      
+      // Filter based on search term if provided
+      const filteredLinks = options.search ? 
+        links.filter(link => link.toLowerCase().includes(options.search.toLowerCase())) : 
+        links;
+      
+      // Apply limit if specified
+      const limitedLinks = options.limit ? 
+        filteredLinks.slice(0, options.limit) : 
+        filteredLinks;
+      
+      const processingTime = Date.now() - startTime;
+      this.updateStats(processingTime, true);
+      
+      console.log(`Markitdown: Successfully mapped ${url} (${limitedLinks.length} links) in ${processingTime}ms`);
+      
+      return {
+        success: true,
+        data: {
+          baseUrl: url,
+          links: limitedLinks,
+          summary: {
+            totalLinks: limitedLinks.length,
+            totalFound: links.length,
+            processingTime,
+            provider: 'markitdown',
+            search: options.search || null
+          },
+          mappedAt: new Date().toISOString()
+        }
+      };
+      
+    } catch (error) {
+      const processingTime = Date.now() - startTime;
+      this.updateStats(processingTime, false);
+      
+      console.error(`Markitdown: Failed to map ${url}:`, error.message);
+      
+      return {
+        success: false,
+        error: {
+          message: error.message,
+          url,
+          processingTime,
+          provider: 'markitdown',
+          timestamp: new Date().toISOString()
+        }
+      };
+    }
+  }
+
+  extractLinksFromMarkdown(markdown) {
+    const links = new Set();
+    
+    // Extract markdown links: [text](url)
+    const markdownLinkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+    let match;
+    while ((match = markdownLinkRegex.exec(markdown)) !== null) {
+      const url = match[2];
+      if (this.isValidUrl(url)) {
+        links.add(url);
+      }
+    }
+    
+    // Extract raw URLs
+    const urlRegex = /https?:\/\/[^\s<>"{}|\\^\[\]`]+/g;
+    while ((match = urlRegex.exec(markdown)) !== null) {
+      const url = match[0];
+      // Clean up URL (remove trailing punctuation)
+      const cleanUrl = url.replace(/[.,;:!?)]+$/, '');
+      if (this.isValidUrl(cleanUrl)) {
+        links.add(cleanUrl);
+      }
+    }
+    
+    // Extract HTML links if any (in case markitdown preserves some HTML)
+    const htmlLinkRegex = /<a[^>]+href=["']([^"']+)["'][^>]*>/g;
+    while ((match = htmlLinkRegex.exec(markdown)) !== null) {
+      const url = match[1];
+      if (this.isValidUrl(url)) {
+        links.add(url);
+      }
+    }
+    
+    return Array.from(links);
+  }
+
   async healthCheck() {
     try {
       // Check conda environment
